@@ -13,8 +13,7 @@ app = Dash(__name__)
 server = app.server
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
-df = pd.read_csv("data/year-cumulative-taxonomy.csv")
-df_1 = pd.read_csv("data/descriptive-taxonomy.csv")
+df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")  # keep this for drop down menu
 df_2 = pd.read_csv("data/country-cumulative-taxonomy.csv")
 df_3 = pd.read_csv("data/host-taxonomy.csv")
 df_4 = pd.read_csv("data/isolation_source-taxonomy.csv")
@@ -43,7 +42,7 @@ app.layout = html.Div(
                         dcc.Dropdown(
                             multi=True,
                             id="pandas-dropdown-1",
-                            value=df.Taxonomy[0],
+                            value="All Species",
                             options=[
                                 {"label": i, "value": i}
                                 for i in list(df.Taxonomy.unique())
@@ -85,15 +84,32 @@ app.layout = html.Div(
                     [dcc.Graph(id="graph-host")],
                     style={"display": "inline-block", "float": "right"},
                 ),
-            ]
+            ],
+            style={"background-color": "rgb(249, 249, 249)"},
         ),
         dcc.Graph(id="graph-isolation_source"),
     ],
 )
 
 
-@app.callback(Output("box-1", "figure"), Input("pandas-dropdown-1", "value"))
-def card(selected_family):
+@app.callback(
+    Output("box-1", "figure"),
+    [Input(component_id="radio2", component_property="value")],
+    Input("pandas-dropdown-1", "value"),
+)
+def card(prot_nuc, selected_family):
+    df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
+    if str(prot_nuc) == "Protein":
+        df_1.rename(
+            columns={"Count_x": "Count"},
+            inplace=True,
+        )
+    else:
+        df_1 = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
+        df_1.rename(
+            columns={"Count_y": "Count"},
+            inplace=True,
+        )
     if type(selected_family) != str:
         filtered_df_1 = df_1[df_1["Taxonomy"].isin(selected_family)]
     else:
@@ -111,7 +127,7 @@ def card(selected_family):
             "data": {
                 "indicator": [
                     {
-                        "title": {"text": "Number of protein sequences"},
+                        "title": {"text": "Number of " + str(prot_nuc) + " sequences"},
                         "mode": "number",
                     }
                 ]
@@ -123,10 +139,23 @@ def card(selected_family):
 
 @app.callback(
     Output("graph-year", "figure"),
+    [Input(component_id="radio2", component_property="value")],
     Input("pandas-dropdown-1", "value"),
     [Input(component_id="radio1", component_property="value")],
 )
-def update_figure(selected_family, value):
+def update_figure(hey, selected_family, value):
+    if str(hey) == "Protein":
+        df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
+        df.rename(
+            columns={"Cumulative_Count_x": "Cumulative_Count", "Count_x": "Count"},
+            inplace=True,
+        )
+    else:
+        df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
+        df.rename(
+            columns={"Cumulative_Count_y": "Cumulative_Count", "Count_y": "Count"},
+            inplace=True,
+        )
     if value == "cumulative":
         if type(selected_family) != str:
             filtered_df = df[df["Taxonomy"].isin(selected_family)]
@@ -277,8 +306,8 @@ def figure_4(selected_family):
         title=("Top 10 Isolation Source for " + str(selected_family)),
         transition_duration=500,
         showlegend=False,
-        paper_bgcolor="rgb(249, 249, 249)",
-        plot_bgcolor="rgb(249, 249, 249)",
+        paper_bgcolor="rgb(207, 226, 243)",
+        plot_bgcolor="rgb(207, 226, 243)",
     )
     return fig_4
 
