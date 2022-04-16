@@ -289,6 +289,7 @@ def data_processing(ids, molecule_type):
     Entrez.email = "eselimnl@gmail.com"
     Entrez.tool = "viralcatalogue"
     Entrez.api_key = "075788ecc8b13ce90ce89db8a7f18810d609"
+    Entrez.max_tries = 10
     handle = Entrez.efetch(
         db=molecule_type, id=ids, rettype="gb", retmode="xml"
     )  # db to set protein or nucleotide from user input
@@ -447,16 +448,17 @@ def processed_data(n, molecule_type, ids):
             paper_bgcolor="rgb(248, 248, 255)",
             plot_bgcolor="rgb(248, 248, 255)",
         )
-
+        a.sort_values(by="Count", ascending=True, inplace=True)
         list_countries = a.Countries.to_list()
         new_strings_countries = (
             []
         )  # replace gaps " " with "_", otherwise we recieve an error with multiple words
+
         for string in list_countries:
             new_string = string.replace(" ", "_")
             new_strings_countries.append(new_string)
         sc_fig_2 = px.bar(
-            a[0:10].sort_values(by="Count", ascending=True),
+            a[0:10],
             x="Count",
             y=new_strings_countries[0:10],
             color="Countries",
@@ -473,13 +475,14 @@ def processed_data(n, molecule_type, ids):
             paper_bgcolor="rgb(249, 249, 249)",
             plot_bgcolor="rgb(249, 249, 249)",
         )
+        b.sort_values(by="Count", ascending=True, inplace=True)
         list_hosts = b.Hosts.to_list()
         new_strings_hosts = []
         for string in list_hosts:
             new_string = string.replace(" ", "_")
             new_strings_hosts.append(new_string)
         sc_fig_3 = px.bar(
-            b[0:10].sort_values(by="Count", ascending=True),
+            b[0:10],
             x="Count",
             color="Hosts",
             y=new_strings_hosts[0:10],
@@ -534,7 +537,7 @@ def processed_data(n, molecule_type, ids):
                         ),
                     ],
                     className="row",
-                    style={"background-color": "rgb(249, 249, 249)"},
+                    style={"background-color": "rgb(248, 248, 255)"},
                 ),
                 dcc.Graph(figure=sc_fig_2),
                 dcc.Graph(figure=sc_fig_3),
