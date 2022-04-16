@@ -448,7 +448,7 @@ def processed_data(n, molecule_type, ids):
             paper_bgcolor="rgb(248, 248, 255)",
             plot_bgcolor="rgb(248, 248, 255)",
         )
-        a.sort_values(by="Count", ascending=True, inplace=True)
+        a.sort_values(by="Count", ascending=False, inplace=True)
         list_countries = a.Countries.to_list()
         new_strings_countries = (
             []
@@ -475,7 +475,9 @@ def processed_data(n, molecule_type, ids):
             paper_bgcolor="rgb(249, 249, 249)",
             plot_bgcolor="rgb(249, 249, 249)",
         )
-        b.sort_values(by="Count", ascending=True, inplace=True)
+        sc_fig_2.update_yaxes(categoryorder="total ascending")
+
+        b.sort_values(by="Count", ascending=False, inplace=True)
         list_hosts = b.Hosts.to_list()
         new_strings_hosts = []
         for string in list_hosts:
@@ -499,6 +501,7 @@ def processed_data(n, molecule_type, ids):
             paper_bgcolor="rgb(253, 250, 237)",
             plot_bgcolor="rgb(253, 250, 237)",
         )
+        sc_fig_3.update_yaxes(categoryorder="total ascending")
 
         # print(graphs)
         return d, html.Div(
