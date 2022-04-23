@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc  # apply a bootstrap template
 
 layout = html.Div(
     [  ###NAVBAR
-        dbc.NavbarSimple(sadasd
+        dbc.NavbarSimple(
             children=[
                 dbc.NavItem(dbc.NavLink("HOME", href="/")),
                 dbc.DropdownMenu(
