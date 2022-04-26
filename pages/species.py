@@ -1,5 +1,4 @@
 from operator import index
-from tkinter import font
 from dash import Dash, Input, Output, html, dcc, State, dash_table, callback
 from dash.exceptions import PreventUpdate
 import dash
