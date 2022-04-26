@@ -14,6 +14,9 @@ import io
 # DATA
 
 df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")  # keep this for drop down menu
+df_2 = pd.read_csv("data/country-cumulative-taxonomy.csv")
+df_3 = pd.read_csv("data/host-taxonomy.csv")
+df_4 = pd.read_csv("data/isolation_source-taxonomy.csv")
 
 layout = html.Div(
     children=[
