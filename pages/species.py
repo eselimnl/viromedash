@@ -78,10 +78,10 @@ layout = html.Div(
                     className="body",
                     id="radio2",
                     options=[
-                        {"label": "Nucleotide", "value": "Nucleotide"},
-                        {"label": "Protein", "value": "Protein"},
+                        {"label": "Nucleotide", "value": "nucleotide"},
+                        {"label": "Protein", "value": "protein"},
                     ],
-                    value="Protein",
+                    value="protein",
                     labelStyle={"display": "inline-flex"},
                     inline=True,
                 ),
@@ -98,17 +98,6 @@ layout = html.Div(
             ],
             value="cumulative",
             labelStyle={"display": "inline-flex"},
-            inline=True,
-        ),
-        # lets give an option for release date
-        dbc.Label("Y-axis to include:"),
-        dbc.Checklist(
-            options=[
-                {"label": "Collection Date", "value": "Collection_Date"},
-                {"label": "Release Date", "value": "Release_Date"},
-            ],
-            value=[1],
-            id="datetype",
             inline=True,
         ),
         dbc.Button("Download CSV", size="sm", color="info", id="btn_csv"),
@@ -136,7 +125,7 @@ layout = html.Div(
 )
 def card(prot_nuc, selected_family):
     df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
-    if str(prot_nuc) == "Protein":
+    if str(prot_nuc) == "protein":
         df_1.rename(
             columns={"Count_x": "Count"},
             inplace=True,
@@ -164,7 +153,9 @@ def card(prot_nuc, selected_family):
             "data": {
                 "indicator": [
                     {
-                        "title": {"text": "Number of " + str(prot_nuc) + " sequences"},
+                        "title": {
+                            "text": "Number of " + str(prot_nuc) + " sequences found:"
+                        },
                         "mode": "number",
                     }
                 ]
@@ -185,7 +176,7 @@ def card(prot_nuc, selected_family):
     [Input(component_id="radio1", component_property="value")],
 )
 def update_figure(hey, selected_family, value):
-    if str(hey) == "Protein":
+    if str(hey) == "protein":
         df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
         df.rename(
             columns={"Cumulative_Count_x": "Cumulative_Count", "Count_x": "Count"},

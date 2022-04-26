@@ -55,7 +55,7 @@ layout = html.Div(
                 html.Div(
                     [
                         html.H6(
-                            children="Select your interest of contry or continents",
+                            children="Select your interest of country or continent",
                         ),
                     ],
                     style={},
