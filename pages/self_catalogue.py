@@ -22,7 +22,21 @@ layout = html.Div(
                     children=[
                         dbc.DropdownMenuItem("Filters", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
-                        dbc.DropdownMenuItem("Page 3", href="#"),
+                        dbc.DropdownMenuItem(
+                            "Host and environmental source", href="/host"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Country and geographic region", href="/geography"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Collection and release date", href="/date"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Baltimore Classification", href="/baltimore"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Make a self catalogue", href="/self-catalogue"
+                        ),
                     ],
                     nav=True,
                     in_navbar=True,
@@ -31,7 +45,7 @@ layout = html.Div(
             ],
             brand="METAViz",
             brand_href="/",
-            color="info",
+            color="#2196f3",
             dark=True,
         ),
         html.Div(
@@ -125,25 +139,9 @@ def parse_contents(contents, filename, date):
             print(e)
             return html.Div(["There was an error processing this file."])
 
-        return ids, html.Div(
-            [
-                html.Button(id="submit-button", children="Create Graph"),
-                dbc.Spinner(html.Div(id="loading-output")),
-            ]
-        )
+        return ids, html.Div([html.Button(id="submit-button", children="Create Graph")])
     else:
         return [{}]
-
-
-# LOADING
-@callback(
-    Output("loading-output", "children"),
-    [Input("submit-button", "n_clicks")],
-    State("df-stored", "data"),
-)
-def load_output(n, data):
-    if n is None:
-        return f"Output not reloaded yet"
 
 
 @callback(
@@ -379,7 +377,7 @@ def processed_data(n, molecule_type, ids):
                 html.Button("Download CSV", id="btn_csv"),
                 dcc.Download(id="download-dataframe-csv"),
                 dash_table.DataTable(
-                    df.to_dict("records"),
+                    df.to_dict("records"),  ##to make it JSON serializable.
                     [{"name": i, "id": i} for i in df.columns],
                     filter_action="native",
                     page_action="native",

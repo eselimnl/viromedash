@@ -1,4 +1,5 @@
 from operator import index
+from tkinter import font
 from dash import Dash, Input, Output, html, dcc, State, dash_table, callback
 from dash.exceptions import PreventUpdate
 import dash
@@ -10,10 +11,10 @@ import pandas as pd
 import base64
 import io
 
+
+# DATA
+
 df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")  # keep this for drop down menu
-df_2 = pd.read_csv("data/country-cumulative-taxonomy.csv")
-df_3 = pd.read_csv("data/host-taxonomy.csv")
-df_4 = pd.read_csv("data/isolation_source-taxonomy.csv")
 
 layout = html.Div(
     children=[
@@ -24,7 +25,21 @@ layout = html.Div(
                     children=[
                         dbc.DropdownMenuItem("Filters", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
-                        dbc.DropdownMenuItem("Page 3", href="#"),
+                        dbc.DropdownMenuItem(
+                            "Host and environmental source", href="/host"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Country and geographic region", href="/geography"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Collection and release date", href="/date"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Baltimore Classification", href="/baltimore"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Make a self catalogue", href="/self-catalogue"
+                        ),
                     ],
                     nav=True,
                     in_navbar=True,
@@ -33,7 +48,7 @@ layout = html.Div(
             ],
             brand="METAViz",
             brand_href="/",
-            color="info",
+            color="#2196f3",
             dark=True,
         ),
         html.Div(
@@ -97,7 +112,9 @@ layout = html.Div(
             id="datetype",
             inline=True,
         ),
-        dbc.Button("Download CSV", size="sm", color="info"),
+        dbc.Button("Download CSV", size="sm", color="info", id="btn_csv"),
+        dcc.Download(id="download-species-year"),
+        dcc.Store(id="df-species-year", storage_type="local"),
         dcc.Graph(id="graph-year"),
         dbc.Row(
             [
@@ -158,8 +175,12 @@ def card(prot_nuc, selected_family):
     return box_1
 
 
+### FIGURE 1
+
+
 @callback(
     Output("graph-year", "figure"),
+    Output("df-species-year", "data"),
     [Input(component_id="radio2", component_property="value")],
     Input("pandas-dropdown-1", "value"),
     [Input(component_id="radio1", component_property="value")],
@@ -203,8 +224,8 @@ def update_figure(hey, selected_family, value):
         fig.update_yaxes(
             automargin=True
         )  # fixes the overlapping of y-axis title and ticks
-
-        return fig
+        filtered_df = filtered_df.to_dict()  # make it JSON serializable
+        return fig, filtered_df
     else:
         if type(selected_family) != str:
             filtered_df = df[df["Taxonomy"].isin(selected_family)]
@@ -225,8 +246,8 @@ def update_figure(hey, selected_family, value):
         )
 
         fig.update_layout(transition_duration=500)
-
-        return fig
+        filtered_df = filtered_df.to_dict()  # make it JSON serializable
+        return fig, filtered_df
 
 
 @callback(
@@ -325,3 +346,19 @@ def figure_4(selected_family):
     )
     fig_4.update_traces(textposition="inside", textinfo="percent+label")
     return fig_4
+
+
+###DOWNLOADS
+
+# Figure 1
+@callback(
+    Output("download-species-year", "data"),
+    Input("btn_csv", "n_clicks"),
+    State("df-species-year", "data"),
+    prevent_initial_call=True,
+)
+def func(n_clicks, data):
+    df_to_download = pd.DataFrame(data)
+    return dcc.send_data_frame(
+        df_to_download.to_csv, "species-year.csv", sep=";", index=False
+    )

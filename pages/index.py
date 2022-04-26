@@ -13,10 +13,18 @@ layout = html.Div(
                     children=[
                         dbc.DropdownMenuItem("Filters", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
-                        dbc.DropdownMenuItem("Host and environmental source", href="#"),
-                        dbc.DropdownMenuItem("Country and geographic region", href="#"),
-                        dbc.DropdownMenuItem("Collection and release date", href="#"),
-                        dbc.DropdownMenuItem("Baltimore Classification", href="#"),
+                        dbc.DropdownMenuItem(
+                            "Host and environmental source", href="/host"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Country and geographic region", href="/geography"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Collection and release date", href="/date"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Baltimore Classification", href="/baltimore"
+                        ),
                         dbc.DropdownMenuItem(
                             "Make a self catalogue", href="/self-catalogue"
                         ),
@@ -28,7 +36,7 @@ layout = html.Div(
             ],
             brand="METAViz",
             brand_href="/",
-            color="info",
+            color="#2196f3",
             dark=True,
         ),
         html.Div(
@@ -62,17 +70,35 @@ layout = html.Div(
                             ),
                             href="/species",
                         ),
-                        dbc.Button(
-                            "Host and environmental source", color="info", outline=True
+                        dcc.Link(
+                            dbc.Button(
+                                "Host and environmental source",
+                                color="info",
+                                outline=True,
+                            ),
+                            href="/host",
                         ),
-                        dbc.Button(
-                            "Country and geographic region", color="info", outline=True
+                        dcc.Link(
+                            dbc.Button(
+                                "Country and geographic region",
+                                color="info",
+                                outline=True,
+                            ),
+                            href="/geography",
                         ),
-                        dbc.Button(
-                            "Collection and release date", color="info", outline=True
+                        dcc.Link(
+                            dbc.Button(
+                                "Collection and release date",
+                                color="info",
+                                outline=True,
+                            ),
+                            href="/date",
                         ),
-                        dbc.Button(
-                            "Baltimore Classification", color="info", outline=True
+                        dcc.Link(
+                            dbc.Button(
+                                "Baltimore Classification", color="info", outline=True
+                            ),
+                            href="/baltimore",
                         ),
                         dcc.Link(
                             dbc.Button("Self catalogue", color="info", outline=True),
