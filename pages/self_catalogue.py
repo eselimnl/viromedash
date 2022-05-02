@@ -50,14 +50,7 @@ layout = html.Div(
         ),
         html.Div(
             [
-                html.Div(
-                    [
-                        html.H6(
-                            children="Upload an accession list (.txt or .csv) or a fasta file to visualize sequence metadata",
-                        ),
-                    ],
-                    style={},
-                ),
+                dbc.Label("Specify the sequence type"),  # color="secondary"
                 dbc.RadioItems(
                     className="body",
                     id="radio2",
@@ -67,6 +60,14 @@ layout = html.Div(
                     ],
                     value="protein",
                     labelStyle={"display": "inline-flex"},
+                ),
+                html.Div(
+                    [
+                        html.H6(
+                            children="Upload an accession list (.txt or .csv) or a fasta file to visualize sequence metadata",
+                        ),
+                    ],
+                    style={},
                 ),
                 dbc.Button(
                     "Download Sample Input",

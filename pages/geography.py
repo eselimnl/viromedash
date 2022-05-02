@@ -11,8 +11,8 @@ import pandas as pd
 
 # DATA
 
-df = pd.read_csv("data/geography_species.csv").dropna(
-    subset=["Geographical_Region"]
+df = pd.read_csv("data/geography_species_with_dates.csv").dropna(
+    subset=["Region"]
 )  # lets remove NA values
 
 layout = html.Div(
@@ -65,14 +65,39 @@ layout = html.Div(
                         dcc.Dropdown(
                             id="geography_dropdown",
                             multi=False,  # inhibit multi selection
-                            value="Australia",
+                            value="Europa",
                             options=[
                                 {"label": i, "value": i}
-                                for i in list(df.Geographical_Region.unique())
+                                for i in list(df.Region.unique())
                             ],
                         )
                     ]
                 ),
+                dbc.Label("Specify the sequence type"),  # color="secondary"
+                dbc.RadioItems(
+                    className="body",
+                    id="radio2",
+                    options=[
+                        {"label": "Nucleotide", "value": "nucleotide"},
+                        {"label": "Protein", "value": "protein"},
+                    ],
+                    value="protein",
+                    labelStyle={"display": "inline-flex"},
+                ),
+                dbc.Label("Specify the interval for reporting viral protein sequences"),
+                # RANGE SLIDER
+                dcc.RangeSlider(
+                    df[
+                        "Collection_Date"
+                    ].min(),  # min year in overall dataset, not in the selected species
+                    2022,  # max year is always 2022
+                    id="linear-range-slider",
+                    marks=None,
+                    value=[df["Collection_Date"].min(), df["Collection_Date"].max()],
+                    step=1,
+                    tooltip={"placement": "bottom", "always_visible": True},
+                ),
+                # GRAPH
                 dcc.Graph(id="geography-graph"),
             ]
         ),
@@ -80,26 +105,40 @@ layout = html.Div(
 )
 
 
+### GRAPH
+
+
 @callback(
     Output("geography-graph", "figure"),
     # Output("df", "data"),
-    [Input(component_id="geography_dropdown", component_property="value")],
+    [
+        Input(component_id="geography_dropdown", component_property="value"),
+        Input("linear-range-slider", "value"),
+    ],
 )
-def update_figure(selected_country):
-    df = pd.read_csv("data/geography_species.csv").dropna(
-        subset=["Geographical_Region"]
-    )
+def update_figure(selected_country, time):
+    df = pd.read_csv("data/geography_species_with_dates.csv").dropna(subset=["Region"])
     if type(selected_country) != str:
 
-        df = df[df["Geographical_Region"].isin(selected_country)].sort_values(
-            "Count", ascending=False
-        )[0:10]
+        df = df[df["Region"].isin(selected_country)]
+        df = (
+            df.loc[df["Collection_Date"].between(time[0], time[1])]
+            .groupby(by=["Species", "Region"])[["Species", "Region", "Count"]]
+            .sum("Count")
+            .reset_index()
+            .sort_values("Count", ascending=False)[0:10]
+        )
     else:
-        df = df[df["Geographical_Region"] == selected_country].sort_values(
-            "Count", ascending=False
-        )[0:10]
+        df = df[df["Region"] == selected_country]
+        df = (
+            df.loc[df["Collection_Date"].between(time[0], time[1])]
+            .groupby(by=["Species", "Region"])[["Species", "Region", "Count"]]
+            .sum("Count")
+            .reset_index()
+            .sort_values("Count", ascending=False)[0:10]
+        )
 
-    fig = px.scatter(
+    fig = px.bar(
         df,
         x="Species",
         y="Count",

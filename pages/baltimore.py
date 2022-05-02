@@ -8,6 +8,23 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 
+
+df = pd.read_csv("data/sunburst_500.csv")
+
+fig = px.sunburst(
+    df,
+    path=["baltimore", "Family", "Genus", "Species"],
+    color="baltimore",
+    maxdepth=3,
+    width=1200,
+    height=1200,
+)
+
+fig.update_layout(
+    margin=dict(l=20, r=20, t=1, b=1),
+)
+
+
 layout = html.Div(
     [
         dbc.NavbarSimple(
@@ -42,6 +59,10 @@ layout = html.Div(
             brand_href="/",
             color="#2196f3",
             dark=True,
-        )
+        ),
+        dcc.Graph(figure=fig),
     ]
 )
+
+
+### GRAPH

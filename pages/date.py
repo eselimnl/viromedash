@@ -8,6 +8,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 
+df_prot = pd.read_csv("data/year_species_aa.csv")
+df_nt = pd.read_csv("data/year_species_nt.csv")
+
+
 layout = html.Div(
     [
         dbc.NavbarSimple(
@@ -42,6 +46,86 @@ layout = html.Div(
             brand_href="/",
             color="#2196f3",
             dark=True,
-        )
+        ),
+        html.H6("Specify the interval to plot viral species"),
+        # RANGE SLIDER
+        dcc.RangeSlider(
+            df_prot[
+                "Collection_Date"
+            ].min(),  # min year in overall dataset, not in the selected species
+            2022,  # max year is always 2022
+            id="date-range-slider",
+            marks=None,
+            value=[df_prot["Collection_Date"].min(), 2022],
+            step=1,
+            tooltip={"placement": "bottom", "always_visible": True},
+        ),
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        dbc.Label("Specify the sequence type"),
+                        dbc.RadioItems(
+                            className="body",
+                            id="radio2",
+                            options=[
+                                {"label": "Nucleotide", "value": "nucleotide"},
+                                {"label": "Protein", "value": "protein"},
+                            ],
+                            value="protein",
+                            labelStyle={"display": "inline-flex"},
+                            inline=True,
+                        ),
+                    ],
+                    lg=6,
+                ),
+                dbc.Col(
+                    [
+                        dbc.Label("Select how many species to be shown"),
+                        dcc.Dropdown(["5", "10", "20"], "10", id="numberofspecies"),
+                    ],
+                    lg=6,
+                ),
+            ]
+        ),
+        dcc.Graph(id="date-species-graph"),
     ]
 )
+
+### GRAPH
+
+
+@callback(
+    Output("date-species-graph", "figure"),
+    # Output("df", "data"),
+    [
+        Input(component_id="numberofspecies", component_property="value"),
+        Input("date-range-slider", "value"),
+    ],
+)
+def update_figure(speciesnumber, time):
+    df = pd.read_csv("data/year_species_aa.csv")
+    df = df.loc[df["Collection_Date"].between(time[0], time[1])]
+    df = (
+        df.groupby(by=["Species"])[["Species", "Count"]]
+        .sum("Count")
+        .reset_index()
+        .sort_values("Count", ascending=False)[0 : int(speciesnumber)]
+    )
+
+    fig = px.bar(
+        df,
+        x="Species",
+        y="Count",
+        color="Species",
+        labels={"Species": "Species", "Count": "Count"},
+    )
+
+    fig.update_layout(
+        title=("Reported viral sequences for"),
+        transition_duration=500,
+        showlegend=False,
+    )
+    fig.update_yaxes(automargin=True)  # fixes the overlapping of y-axis title and ticks
+    # filtered_df = filtered_df.to_dict()  # make it JSON serializable
+    return fig
