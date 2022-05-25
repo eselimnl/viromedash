@@ -19,7 +19,7 @@ layout = html.Div(
                 dbc.NavItem(dbc.NavLink("HOME", href="/")),
                 dbc.DropdownMenu(
                     children=[
-                        dbc.DropdownMenuItem("Filters", header=True),
+                        dbc.DropdownMenuItem("SEARCH", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
                         dbc.DropdownMenuItem(
                             "Host and environmental source", href="/host"
@@ -39,7 +39,7 @@ layout = html.Div(
                     ],
                     nav=True,
                     in_navbar=True,
-                    label="Filters",
+                    label="SEARCH",
                 ),
             ],
             brand="METAViz",
@@ -89,6 +89,9 @@ layout = html.Div(
             ]
         ),
         dcc.Graph(id="date-species-graph"),
+        dbc.Button("Download CSV", size="sm", color="info", id="btn_csv_date"),
+        dcc.Store(id="df-date", storage_type="local"),
+        dcc.Download(id="download-date-data"),
     ]
 )
 
@@ -97,7 +100,7 @@ layout = html.Div(
 
 @callback(
     Output("date-species-graph", "figure"),
-    # Output("df", "data"),
+    Output("df-date", "data"),
     [
         Input(component_id="numberofspecies", component_property="value"),
         Input("date-range-slider", "value"),
@@ -106,7 +109,7 @@ layout = html.Div(
 def update_figure(speciesnumber, time):
     df = pd.read_csv("data/year_species_aa.csv")
     df = df.loc[df["Collection_Date"].between(time[0], time[1])]
-    df = (
+    df_stored = (
         df.groupby(by=["Species"])[["Species", "Count"]]
         .sum("Count")
         .reset_index()
@@ -114,7 +117,7 @@ def update_figure(speciesnumber, time):
     )
 
     fig = px.bar(
-        df,
+        df_stored,
         x="Species",
         y="Count",
         color="Species",
@@ -128,4 +131,20 @@ def update_figure(speciesnumber, time):
     )
     fig.update_yaxes(automargin=True)  # fixes the overlapping of y-axis title and ticks
     # filtered_df = filtered_df.to_dict()  # make it JSON serializable
-    return fig
+    df_store = df.to_dict()
+    return fig, df_store
+
+###DOWNLOADS
+
+# Figure 1
+@callback(
+    Output("download-date-data", "data"),
+    Input("btn_csv_date", "n_clicks"),
+    State("df-date", "data"),
+    prevent_initial_call=True,
+)
+def func(n_clicks, data):
+    df_to_download = pd.DataFrame(data)
+    return dcc.send_data_frame(
+        df_to_download.to_csv, "date.csv", sep=";", index=False
+    )

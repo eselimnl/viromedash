@@ -17,7 +17,7 @@ layout = html.Div(
                 dbc.NavItem(dbc.NavLink("HOME", href="/")),
                 dbc.DropdownMenu(
                     children=[
-                        dbc.DropdownMenuItem("Filters", header=True),
+                        dbc.DropdownMenuItem("SEARCH", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
                         dbc.DropdownMenuItem(
                             "Host and environmental source", href="/host"
@@ -37,7 +37,7 @@ layout = html.Div(
                     ],
                     nav=True,
                     in_navbar=True,
-                    label="Filters",
+                    label="SEARCH",
                 ),
             ],
             brand="METAViz",
@@ -87,7 +87,7 @@ layout = html.Div(
                 ),
                 dbc.Col(
                     [
-                        dbc.Label("Select how many species to be shown"),
+                        dbc.Label("Select how many species to be shown in the figure"),
                         dcc.Dropdown(["5", "10", "20"], "10", id="numberofspecies2"),
                     ],
                     lg=6,
@@ -95,6 +95,9 @@ layout = html.Div(
             ]
         ),
         dcc.Graph(id="host-graph"),
+        dbc.Button("Download CSV", size="sm", color="info", id="btn_csv_host"),
+        dcc.Store(id="df-host", storage_type="local"),
+        dcc.Download(id="download-host-data"),
     ]
 )
 
@@ -104,6 +107,7 @@ layout = html.Div(
 
 @callback(
     Output("host-graph", "figure"),
+    Output("df-host", "data"),
     # Output("df", "data"),
     [
         Input(component_id="numberofspecies2", component_property="value"),
@@ -139,4 +143,20 @@ def update_figure(numberofspecies2, selected_host):
     fig.update_yaxes(automargin=True)  # fixes the overlapping of y-axis title and ticks
     fig.update_xaxes(automargin=True)
     # filtered_df = filtered_df.to_dict()  # make it JSON serializable
-    return fig
+    df = df.to_dict()
+    return fig,df
+
+###DOWNLOADS
+
+# Figure 1
+@callback(
+    Output("download-host-data", "data"),
+    Input("btn_csv_host", "n_clicks"),
+    State("df-host", "data"),
+    prevent_initial_call=True,
+)
+def func(n_clicks, data):
+    df_to_download = pd.DataFrame(data)
+    return dcc.send_data_frame(
+        df_to_download.to_csv, "host.csv", sep=";", index=False
+    )

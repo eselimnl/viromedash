@@ -20,7 +20,7 @@ layout = html.Div(
                 dbc.NavItem(dbc.NavLink("HOME", href="/")),
                 dbc.DropdownMenu(
                     children=[
-                        dbc.DropdownMenuItem("Filters", header=True),
+                        dbc.DropdownMenuItem("SEARCH", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
                         dbc.DropdownMenuItem(
                             "Host and environmental source", href="/host"
@@ -40,7 +40,7 @@ layout = html.Div(
                     ],
                     nav=True,
                     in_navbar=True,
-                    label="Filters",
+                    label="SEARCH",
                 ),
             ],
             brand="METAViz",

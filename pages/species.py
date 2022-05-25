@@ -25,7 +25,7 @@ layout = html.Div(
                 dbc.NavItem(dbc.NavLink("HOME", href="/")),
                 dbc.DropdownMenu(
                     children=[
-                        dbc.DropdownMenuItem("Filters", header=True),
+                        dbc.DropdownMenuItem("SEARCH", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
                         dbc.DropdownMenuItem(
                             "Host and environmental source", href="/host"
@@ -45,7 +45,7 @@ layout = html.Div(
                     ],
                     nav=True,
                     in_navbar=True,
-                    label="Filters",
+                    label="SEARCH",
                 ),
             ],
             brand="METAViz",
@@ -303,7 +303,7 @@ def figure_3(selected_family):
     )
 
     fig_3.update_layout(
-        title=("Top 10 Hosts for " + str(selected_family)),
+        title=("Top 10 Hosts for " + selected_family),
         transition_duration=500,
         showlegend=False,
     )
