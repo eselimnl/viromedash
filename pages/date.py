@@ -42,12 +42,12 @@ layout = html.Div(
                     label="SEARCH",
                 ),
             ],
-            brand="METAViz",
+            brand="VIROMEdash",
             brand_href="/",
             color="#2196f3",
             dark=True,
         ),
-        html.H6("Specify the interval to plot viral species"),
+        html.H6("Specify the time interval to plot viral species"),
         # RANGE SLIDER
         dcc.RangeSlider(
             df_prot[

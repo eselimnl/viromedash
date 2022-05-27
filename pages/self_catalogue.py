@@ -43,7 +43,7 @@ layout = html.Div(
                     label="SEARCH",
                 ),
             ],
-            brand="METAViz",
+            brand="VIROMEdash",
             brand_href="/",
             color="#2196f3",
             dark=True,
