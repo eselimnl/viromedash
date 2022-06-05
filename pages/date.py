@@ -101,13 +101,16 @@ layout = html.Div(
 @callback(
     Output("date-species-graph", "figure"),
     Output("df-date", "data"),
-    [
+    [Input(component_id="radio2", component_property="value"),
         Input(component_id="numberofspecies", component_property="value"),
         Input("date-range-slider", "value"),
     ],
 )
-def update_figure(speciesnumber, time):
-    df = pd.read_csv("data/year_species_aa.csv")
+def update_figure(analysis_type, speciesnumber, time):
+    if analysis_type == "protein":
+        df = pd.read_csv("data/year_species_aa.csv")
+    else: 
+        df = pd.read_csv("data/year_species_nt.csv")
     df = df.loc[df["Collection_Date"].between(time[0], time[1])]
     df_stored = (
         df.groupby(by=["Species"])[["Species", "Count"]]

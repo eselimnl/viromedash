@@ -157,7 +157,7 @@ def card(prot_nuc, selected_family):
                 "indicator": [
                     {
                         "title": {
-                            "text": "Number of " + str(prot_nuc) + " sequences found:"
+                            "text": "Number of reported " + str(prot_nuc) + " sequences:"
                         },
                         "mode": "number",
                     }

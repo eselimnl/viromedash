@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 import pandas as pd
 
 df_host_species = pd.read_csv("data/host-species.csv")
+df_host_species_nt = pd.read_csv("data/host-species.csv")
 
 layout = html.Div(
     [
@@ -109,13 +110,16 @@ layout = html.Div(
     Output("host-graph", "figure"),
     Output("df-host", "data"),
     # Output("df", "data"),
-    [
+    [   Input(component_id="radio2", component_property="value"),
         Input(component_id="numberofspecies2", component_property="value"),
         Input(component_id="host_dropdown", component_property="value"),
     ],
 )
-def update_figure(numberofspecies2, selected_host):
-    df = pd.read_csv("data/host-species.csv")
+def update_figure(analysis_type,numberofspecies2, selected_host):
+    if analysis_type=="protein":
+        df = pd.read_csv("data/host-species.csv")
+    else:
+        df = pd.read_csv("data/host-species-nt.csv")
     if type(selected_host) != str:
 
         df = df[df["Host"].isin(selected_host)].sort_values("Count", ascending=False)[

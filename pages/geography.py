@@ -14,6 +14,9 @@ import pandas as pd
 df = pd.read_csv("data/geography_species_with_dates.csv").dropna(
     subset=["Region"]
 )  # lets remove NA values
+df_nt = pd.read_csv("data/geography_species_with_dates-nt.csv").dropna(
+    subset=["Region"]
+)  # lets remove NA values
 
 layout = html.Div(
     [
@@ -128,14 +131,17 @@ layout = html.Div(
 @callback(
     Output("geography-graph", "figure"),
     # Output("df", "data"),
-    [
+    [Input(component_id="radio2", component_property="value"),
         Input(component_id="geography_dropdown", component_property="value"),
         Input("linear-range-slider", "value"),
         Input(component_id="numberofcountries", component_property="value"),
     ],
 )
-def update_figure(selected_country, time, numberOfcoutry):
-    df = pd.read_csv("data/geography_species_with_dates.csv").dropna(subset=["Region"])
+def update_figure(sequence_type, selected_country, time, numberOfcoutry):
+    if sequence_type == "protein":
+        df = pd.read_csv("data/geography_species_with_dates.csv").dropna(subset=["Region"])
+    else: 
+        df = pd.read_csv("data/geography_species_with_dates-nt.csv").dropna(subset=["Region"])
     if type(selected_country) != str:
 
         df = df[df["Region"].isin(selected_country)]
