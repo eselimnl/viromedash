@@ -9,6 +9,7 @@ layout = html.Div(
         dbc.NavbarSimple(
             children=[
                 dbc.NavItem(dbc.NavLink("HOME", href="/")),
+                dbc.NavItem(dbc.NavLink("USER MANUAL", href="https://viromedash.readthedocs.io")),
                 dbc.DropdownMenu(
                     children=[
                         dbc.DropdownMenuItem("SEARCH", header=True),
