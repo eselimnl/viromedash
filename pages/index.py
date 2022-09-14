@@ -1,5 +1,4 @@
 from operator import index
-from turtle import color, position
 from dash import Dash, Input, Output, html, dcc, State, dash_table, callback
 from dash.exceptions import PreventUpdate
 import dash
