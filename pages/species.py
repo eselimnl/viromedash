@@ -7,8 +7,7 @@ from dash_bootstrap_templates import load_figure_template
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-import base64
-import io
+
 
 
 # DATA
@@ -76,8 +75,12 @@ layout = html.Div(
                         )
                     ],
                 ),
-                dbc.Label("Sequence Type"),
-                dbc.RadioItems(
+                dbc.Row([
+                    dbc.Col([
+                dbc.Row([
+                    dbc.Col([
+                dbc.Label("Sequence type")], lg=4),
+            dbc.Col([dbc.RadioItems(
                     className="body",
                     id="radio2",
                     options=[
@@ -89,10 +92,10 @@ layout = html.Div(
                     inline=True,
                 ),
             ]
-        ),
-        dcc.Graph(id="box-1"),
-        dbc.Label("Parameters"),
-        dbc.RadioItems(
+        )]),
+        dbc.Row([
+        dbc.Col([dbc.Label("Figure data is shown by ")], lg=4),
+        dbc.Col([ dbc.RadioItems(
             className="body",
             id="radio1",
             options=[
@@ -102,7 +105,12 @@ layout = html.Div(
             value="cumulative",
             labelStyle={"display": "inline-flex"},
             inline=True,
-        ),
+        )])])
+        ]),
+        dbc.Col([dcc.Graph(id="box-1")], lg=4)
+        ])]),
+
+
         dbc.Button("Download CSV", size="sm", color="info", id="btn_csv"),
         dcc.Download(id="download-species-year"),
         dcc.Store(id="df-species-year", storage_type="local"),
@@ -151,19 +159,9 @@ def card(prot_nuc, selected_family):
         )
     )
     box_1.update_layout(
-        height=300,  # Added parameter
-        template={
-            "data": {
-                "indicator": [
-                    {
-                        "title": {
-                            "text": "Number of reported " + str(prot_nuc) + " sequences:"
-                        },
-                        "mode": "number",
-                    }
-                ]
-            }
-        },
+        width=200,  # Added parameter
+        height=75,
+        margin_t=20,
     )
     return box_1
 
@@ -204,14 +202,14 @@ def update_figure(hey, selected_family, value):
             color="Taxonomy",
             symbol="Taxonomy",
             labels={
-                "Collection_Date": "Collection Date",
+                "Collection_Date": "Collection year",
                 "Cumulative_Count": "Cumulative number of protein sequences",
                 "Taxonomy": "Taxonomy",
             },
         )
 
         fig.update_layout(
-            title=("Timeline of reported viral sequences for " + str(selected_family)),
+            #title=("Timeline of reported viral sequences for " + str(selected_family).strip('[,]')),
             transition_duration=500,
         )
         fig.update_yaxes(
@@ -267,10 +265,11 @@ def figure_2(selected_family):
         labels={
             "Count": "Cumulative number of protein sequences",
         },
+        hover_data=["Taxonomy"] #temporary solution to multi-bars 
     )
 
     fig_2.update_layout(
-        title=("Top 10 Countries reported viral sequences for " + str(selected_family)),
+        title=("Top countries reported viral sequences for " + str(selected_family).strip('[,]')),
         transition_duration=500,
         showlegend=False,
     )
@@ -300,10 +299,11 @@ def figure_3(selected_family):
         color="Host",
         orientation="h",
         labels={"Count": "Cumulative number of protein sequences"},
+        hover_data=["Taxonomy"] #temporary solution to multi-bars 
     )
 
     fig_3.update_layout(
-        title=("Top 10 Hosts for " + selected_family),
+        title=("Top host species for " + str(selected_family).strip('[,]')),
         transition_duration=500,
         showlegend=False,
     )
@@ -329,11 +329,11 @@ def figure_4(selected_family):
         filtered_df_4,
         values=filtered_df_4["Count"],
         names=filtered_df_4["Isolation_Source"],
-        hole=0.3,
+        hole=0.3
     )
 
     fig_4.update_layout(
-        title=("Top 10 Isolation Source for " + str(selected_family)),
+        title=("Top isolation sources for " + str(selected_family).strip('[,]')),
         transition_duration=500,
         showlegend=False,
     )

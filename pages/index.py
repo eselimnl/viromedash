@@ -1,4 +1,5 @@
 from operator import index
+from turtle import color, position
 from dash import Dash, Input, Output, html, dcc, State, dash_table, callback
 from dash.exceptions import PreventUpdate
 import dash
@@ -165,5 +166,8 @@ dbc.Col([
             ), style={"height": "24rem"},
         )])
     ])
-  ])
+  ]),
+  html.Div(
+            [
+                 dbc.Row(html.H5(children="Last update: May 2022"))], style={"color":"red"}),
 ])

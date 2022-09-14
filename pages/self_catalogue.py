@@ -125,7 +125,7 @@ def parse_contents(contents, filename, date):
                 ids = [i.split(".")[0] if type(i) == str else str(i) for i in ids]
             # ADD Fasta
             elif "fasta" in filename:
-                ids = []
+                ids = list()
                 for seq_record in SeqIO.parse(
                     io.StringIO(decoded.decode("utf-8")), "fasta"
                 ):
@@ -194,7 +194,7 @@ def data_processing(ids, molecule_type):
             for qualifier in qualifiers:
                 yield qualifier["GBQualifier_value"]
 
-    countries = []
+    countries = list()
     for entry in response:
         accession = entry["GBSeq_primary-accession"]
         for country in extract_countries(entry):
@@ -224,7 +224,7 @@ def data_processing(ids, molecule_type):
             for qualifier in qualifiers:
                 yield qualifier["GBQualifier_value"]
 
-    hosts = []
+    hosts = list()
     for entry in response:
         accession = entry["GBSeq_primary-accession"]
         for host in extract_host(entry):
@@ -254,7 +254,7 @@ def data_processing(ids, molecule_type):
             for qualifier in qualifiers:
                 yield qualifier["GBQualifier_value"]
 
-    dates = []
+    dates = list()
     for entry in response:
         accession = entry["GBSeq_primary-accession"]
         for date in extract_date(entry):
@@ -325,12 +325,12 @@ def processed_data(n, molecule_type, ids):
         )
         a.sort_values(by="Count", ascending=False, inplace=True)
         list_countries = a.Countries.to_list()
-        new_strings_countries = (
-            []
-        )  # replace gaps " " with "_", otherwise we recieve an error with multiple words
+        new_strings_countries = list()
+            
+        
 
         for string in list_countries:
-            new_string = string.replace(" ", "_")
+            new_string = string.replace(" ", "_") # replace gaps " " with "_", otherwise we recieve an error with multiple words
             new_strings_countries.append(new_string)
         sc_fig_2 = px.bar(
             a[0:10],
@@ -344,7 +344,7 @@ def processed_data(n, molecule_type, ids):
         )
 
         sc_fig_2.update_layout(
-            title=("Figure 3. Top 10 Countries"),
+            title=("Figure 3. Top Countries"),
             transition_duration=500,
             showlegend=False,
         )
@@ -368,7 +368,7 @@ def processed_data(n, molecule_type, ids):
         )
 
         sc_fig_3.update_layout(
-            title=("Figure 4. Top 10 Hosts"), transition_duration=500, showlegend=False
+            title=("Figure 4. Top Hosts"), transition_duration=500, showlegend=False
         )
         sc_fig_3.update_yaxes(categoryorder="total ascending")
 

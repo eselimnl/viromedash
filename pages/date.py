@@ -128,7 +128,7 @@ def update_figure(analysis_type, speciesnumber, time):
     )
 
     fig.update_layout(
-        title=("Reported viral sequences"),
+        title=("Reported viral sequences between " + str(time[0]) +"-" + str(time[1])),
         transition_duration=500,
         showlegend=False,
     )
