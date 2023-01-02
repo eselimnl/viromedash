@@ -7,8 +7,10 @@ from dash_bootstrap_templates import load_figure_template
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
-import base64
-import io
+
+
+
+# DATA
 
 df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")  # keep this for drop down menu
 df_2 = pd.read_csv("data/country-cumulative-taxonomy.csv")
@@ -22,18 +24,32 @@ layout = html.Div(
                 dbc.NavItem(dbc.NavLink("HOME", href="/")),
                 dbc.DropdownMenu(
                     children=[
-                        dbc.DropdownMenuItem("Filters", header=True),
+                        dbc.DropdownMenuItem("SEARCH", header=True),
                         dbc.DropdownMenuItem("Species/Genus/Family", href="/species"),
-                        dbc.DropdownMenuItem("Page 3", href="#"),
+                        dbc.DropdownMenuItem(
+                            "Host and environmental source", href="/host"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Country and geographic region", href="/geography"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Collection and release date", href="/date"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Baltimore Classification", href="/baltimore"
+                        ),
+                        dbc.DropdownMenuItem(
+                            "Make a self catalogue", href="/self-catalogue"
+                        ),
                     ],
                     nav=True,
                     in_navbar=True,
-                    label="Filters",
+                    label="SEARCH",
                 ),
             ],
-            brand="METAViz",
+            brand="VIROMEdash",
             brand_href="/",
-            color="info",
+            color="#2196f3",
             dark=True,
         ),
         html.Div(
@@ -59,23 +75,27 @@ layout = html.Div(
                         )
                     ],
                 ),
-                dbc.Label("Sequence Type"),
-                dbc.RadioItems(
+                dbc.Row([
+                    dbc.Col([
+                dbc.Row([
+                    dbc.Col([
+                dbc.Label("Sequence type")], lg=4),
+            dbc.Col([dbc.RadioItems(
                     className="body",
                     id="radio2",
                     options=[
-                        {"label": "Nucleotide", "value": "Nucleotide"},
-                        {"label": "Protein", "value": "Protein"},
+                        {"label": "Nucleotide", "value": "nucleotide"},
+                        {"label": "Protein", "value": "protein"},
                     ],
-                    value="Protein",
+                    value="protein",
                     labelStyle={"display": "inline-flex"},
                     inline=True,
                 ),
             ]
-        ),
-        dcc.Graph(id="box-1"),
-        dbc.Label("Parameters"),
-        dbc.RadioItems(
+        )]),
+        dbc.Row([
+        dbc.Col([dbc.Label("Figure data is shown by ")], lg=4),
+        dbc.Col([ dbc.RadioItems(
             className="body",
             id="radio1",
             options=[
@@ -85,19 +105,15 @@ layout = html.Div(
             value="cumulative",
             labelStyle={"display": "inline-flex"},
             inline=True,
-        ),
-        # lets give an option for release date
-        dbc.Label("Y-axis to include:"),
-        dbc.Checklist(
-            options=[
-                {"label": "Collection Date", "value": "Collection_Date"},
-                {"label": "Release Date", "value": "Release_Date"},
-            ],
-            value=[1],
-            id="datetype",
-            inline=True,
-        ),
-        dbc.Button("Download CSV", size="sm", color="info"),
+        )])])
+        ]),
+        dbc.Col([dcc.Graph(id="box-1")], lg=4)
+        ])]),
+
+
+        dbc.Button("Download CSV", size="sm", color="info", id="btn_csv"),
+        dcc.Download(id="download-species-year"),
+        dcc.Store(id="df-species-year", storage_type="local"),
         dcc.Graph(id="graph-year"),
         dbc.Row(
             [
@@ -120,7 +136,7 @@ layout = html.Div(
 )
 def card(prot_nuc, selected_family):
     df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
-    if str(prot_nuc) == "Protein":
+    if str(prot_nuc) == "protein":
         df_1.rename(
             columns={"Count_x": "Count"},
             inplace=True,
@@ -143,29 +159,25 @@ def card(prot_nuc, selected_family):
         )
     )
     box_1.update_layout(
-        height=300,  # Added parameter
-        template={
-            "data": {
-                "indicator": [
-                    {
-                        "title": {"text": "Number of " + str(prot_nuc) + " sequences"},
-                        "mode": "number",
-                    }
-                ]
-            }
-        },
+        width=200,  # Added parameter
+        height=75,
+        margin_t=20,
     )
     return box_1
 
 
+### FIGURE 1
+
+
 @callback(
     Output("graph-year", "figure"),
+    Output("df-species-year", "data"),
     [Input(component_id="radio2", component_property="value")],
     Input("pandas-dropdown-1", "value"),
     [Input(component_id="radio1", component_property="value")],
 )
 def update_figure(hey, selected_family, value):
-    if str(hey) == "Protein":
+    if str(hey) == "protein":
         df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
         df.rename(
             columns={"Cumulative_Count_x": "Cumulative_Count", "Count_x": "Count"},
@@ -190,21 +202,21 @@ def update_figure(hey, selected_family, value):
             color="Taxonomy",
             symbol="Taxonomy",
             labels={
-                "Collection_Date": "Collection Date",
+                "Collection_Date": "Collection year",
                 "Cumulative_Count": "Cumulative number of protein sequences",
                 "Taxonomy": "Taxonomy",
             },
         )
 
         fig.update_layout(
-            title=("Timeline of reported viral sequences for " + str(selected_family)),
+            #title=("Timeline of reported viral sequences for " + str(selected_family).strip('[,]')),
             transition_duration=500,
         )
         fig.update_yaxes(
             automargin=True
         )  # fixes the overlapping of y-axis title and ticks
-
-        return fig
+        filtered_df = filtered_df.to_dict()  # make it JSON serializable
+        return fig, filtered_df
     else:
         if type(selected_family) != str:
             filtered_df = df[df["Taxonomy"].isin(selected_family)]
@@ -225,8 +237,8 @@ def update_figure(hey, selected_family, value):
         )
 
         fig.update_layout(transition_duration=500)
-
-        return fig
+        filtered_df = filtered_df.to_dict()  # make it JSON serializable
+        return fig, filtered_df
 
 
 @callback(
@@ -253,10 +265,11 @@ def figure_2(selected_family):
         labels={
             "Count": "Cumulative number of protein sequences",
         },
+        hover_data=["Taxonomy"] #temporary solution to multi-bars 
     )
 
     fig_2.update_layout(
-        title=("Top 10 Countries reported viral sequences for " + str(selected_family)),
+        title=("Top countries reported viral sequences for " + str(selected_family).strip('[,]')),
         transition_duration=500,
         showlegend=False,
     )
@@ -286,10 +299,11 @@ def figure_3(selected_family):
         color="Host",
         orientation="h",
         labels={"Count": "Cumulative number of protein sequences"},
+        hover_data=["Taxonomy"] #temporary solution to multi-bars 
     )
 
     fig_3.update_layout(
-        title=("Top 10 Hosts for " + str(selected_family)),
+        title=("Top host species for " + str(selected_family).strip('[,]')),
         transition_duration=500,
         showlegend=False,
     )
@@ -315,13 +329,29 @@ def figure_4(selected_family):
         filtered_df_4,
         values=filtered_df_4["Count"],
         names=filtered_df_4["Isolation_Source"],
-        hole=0.3,
+        hole=0.3
     )
 
     fig_4.update_layout(
-        title=("Top 10 Isolation Source for " + str(selected_family)),
+        title=("Top isolation sources for " + str(selected_family).strip('[,]')),
         transition_duration=500,
         showlegend=False,
     )
     fig_4.update_traces(textposition="inside", textinfo="percent+label")
     return fig_4
+
+
+###DOWNLOADS
+
+# Figure 1
+@callback(
+    Output("download-species-year", "data"),
+    Input("btn_csv", "n_clicks"),
+    State("df-species-year", "data"),
+    prevent_initial_call=True,
+)
+def func(n_clicks, data):
+    df_to_download = pd.DataFrame(data)
+    return dcc.send_data_frame(
+        df_to_download.to_csv, "species-year.csv", sep=";", index=False
+    )
