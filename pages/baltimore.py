@@ -15,7 +15,7 @@ fig = px.sunburst(
     df,
     path=["baltimore", "Family", "Genus", "Species"],
     color="baltimore",
-    hover_data=['SequenceNumber'],
+    hover_data=['Count'],
     maxdepth=10,
     width=1200,
     height=1200)
