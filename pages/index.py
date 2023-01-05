@@ -168,5 +168,5 @@ dbc.Col([
   ]),
   html.Div(
             [
-                 dbc.Row(html.H5(children="Last update: May 2022"))], style={"color":"red"}),
+                 dbc.Row(html.H5(children="Last update: January 2023"))], style={"color":"red"}),
 ])

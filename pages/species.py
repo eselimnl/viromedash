@@ -12,7 +12,9 @@ import pandas as pd
 
 # DATA
 
-df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")  # keep this for drop down menu
+df = pd.read_csv("data/species_year_nt_prot.csv")  
+dropdown = pd.read_csv("data/year-cumulative-taxonomy_x2.csv") # keep this for drop down menu
+df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
 df_2 = pd.read_csv("data/country-cumulative-taxonomy.csv")
 df_3 = pd.read_csv("data/host-taxonomy.csv")
 df_4 = pd.read_csv("data/isolation_source-taxonomy.csv")
@@ -70,7 +72,7 @@ layout = html.Div(
                             value="All Species",
                             options=[
                                 {"label": i, "value": i}
-                                for i in list(df.Taxonomy.unique())
+                                for i in list(dropdown.Taxonomy.unique())
                             ],
                         )
                     ],
@@ -135,14 +137,12 @@ layout = html.Div(
     Input("pandas-dropdown-1", "value"),
 )
 def card(prot_nuc, selected_family):
-    df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
     if str(prot_nuc) == "protein":
         df_1.rename(
             columns={"Count_x": "Count"},
             inplace=True,
         )
     else:
-        df_1 = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
         df_1.rename(
             columns={"Count_y": "Count"},
             inplace=True,
@@ -178,15 +178,14 @@ def card(prot_nuc, selected_family):
 )
 def update_figure(hey, selected_family, value):
     if str(hey) == "protein":
-        df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
+
         df.rename(
-            columns={"Cumulative_Count_x": "Cumulative_Count", "Count_x": "Count"},
+            columns={"Cumulative_collection_prot": "Cumulative_Count", "Count_collection_prot": "Count"},
             inplace=True,
         )
     else:
-        df = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
         df.rename(
-            columns={"Cumulative_Count_y": "Cumulative_Count", "Count_y": "Count"},
+            columns={"Cumulative_collection_nt": "Cumulative_Count", "Count_collection_nt": "Count"},
             inplace=True,
         )
     if value == "cumulative":
@@ -197,12 +196,12 @@ def update_figure(hey, selected_family, value):
 
         fig = px.line(
             filtered_df,
-            x="Collection_Date",
+            x="Year", #Collection Date
             y="Cumulative_Count",
             color="Taxonomy",
             symbol="Taxonomy",
             labels={
-                "Collection_Date": "Collection year",
+                "Year": "Collection year",
                 "Cumulative_Count": "Cumulative number of protein sequences",
                 "Taxonomy": "Taxonomy",
             },
@@ -225,12 +224,12 @@ def update_figure(hey, selected_family, value):
 
         fig = px.line(
             filtered_df,
-            x="Collection_Date",
+            x="Year",
             y="Count",
             color="Taxonomy",
             symbol="Taxonomy",
             labels={
-                "Collection_Date": "Collection Date",
+                "Year": "Collection Date",
                 "Count": "Annual protein sequences",
                 "Taxonomy": "Taxonomy",
             },
