@@ -135,14 +135,14 @@ layout = html.Div(
     Input("pandas-dropdown-1", "value"),
 )
 def card(prot_nuc, selected_family):
+    df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
     if str(prot_nuc) == "protein":
-        df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
         df_1.rename(
             columns={"Count_x": "Count"},
             inplace=True,
         )
     else:
-        df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
+        df_1 = pd.read_csv("data/year-cumulative-taxonomy_x2.csv")
         df_1.rename(
             columns={"Count_y": "Count"},
             inplace=True,
