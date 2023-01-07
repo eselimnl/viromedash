@@ -12,9 +12,7 @@ import pandas as pd
 
 # DATA
 
-df = pd.read_csv("data/species_year_nt_prot.csv")  
 dropdown = pd.read_csv("data/year-cumulative-taxonomy_x2.csv") # keep this for drop down menu
-df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
 df_2 = pd.read_csv("data/country-cumulative-taxonomy.csv")
 df_3 = pd.read_csv("data/host-taxonomy.csv")
 df_4 = pd.read_csv("data/isolation_source-taxonomy.csv")
@@ -138,11 +136,13 @@ layout = html.Div(
 )
 def card(prot_nuc, selected_family):
     if str(prot_nuc) == "protein":
+        df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
         df_1.rename(
             columns={"Count_x": "Count"},
             inplace=True,
         )
     else:
+        df_1 = pd.read_csv("data/descriptive-taxonomy_x2.csv")
         df_1.rename(
             columns={"Count_y": "Count"},
             inplace=True,
@@ -178,12 +178,13 @@ def card(prot_nuc, selected_family):
 )
 def update_figure(hey, selected_family, value):
     if str(hey) == "protein":
-
+        df = pd.read_csv("data/species_year_nt_prot.csv")  
         df.rename(
             columns={"Cumulative_collection_prot": "Cumulative_Count", "Count_collection_prot": "Count"},
             inplace=True,
         )
     else:
+        df = pd.read_csv("data/species_year_nt_prot.csv")  
         df.rename(
             columns={"Cumulative_collection_nt": "Cumulative_Count", "Count_collection_nt": "Count"},
             inplace=True,
