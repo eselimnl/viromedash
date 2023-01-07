@@ -11,7 +11,7 @@ import pandas as pd
 
 
 # DATA
-
+df = pd.read_csv("data/species_year_nt_prot.csv")  
 dropdown = pd.read_csv("data/year-cumulative-taxonomy_x2.csv") # keep this for drop down menu
 df_2 = pd.read_csv("data/country-cumulative-taxonomy.csv")
 df_3 = pd.read_csv("data/host-taxonomy.csv")
@@ -186,7 +186,7 @@ def update_figure(hey, selected_family, value):
     else:
         df = pd.read_csv("data/species_year_nt_prot.csv")  
         df.rename(
-            columns={"Cumulative_collection_nt": "Cumulative_Count", "Count_collection_nt": "Count"},
+            columns={"Cumulative_Collection_nt": "Cumulative_Count", "Count_Collection_nt": "Count"},
             inplace=True,
         )
     if value == "cumulative":
