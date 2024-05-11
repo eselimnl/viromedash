@@ -6,7 +6,7 @@ VIROMEdash is a visualizer for [NCBI Virus](https://www.ncbi.nlm.nih.gov/labs/vi
 
 ## Web Server
 
-VIROMEdash is publicly available at https://viromedash.herokuapp.com/.
+VIROMEdash is publicly available at [https://viromedash-38b937dd7be3.herokuapp.com/](https://viromedash-38b937dd7be3.herokuapp.com/).
 
 ## Issues
 
