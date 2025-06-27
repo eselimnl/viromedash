@@ -41,7 +41,8 @@ source myenv/bin/activate
 ```
 
 ### 3. Install dependencies
-```pip install -r requirements.txt 
+```
+pip install -r requirements.txt 
 ```
 
 ### 4. Run the app
@@ -51,7 +52,7 @@ python3.11 app.py
 If the app is running, open your browser and go to: http://127.0.0.1:8050/
 
 ### File structure
-
+```
 viromedash/
 ├── app.py
 ├── pages/
@@ -66,5 +67,5 @@ viromedash/
 │   └── species_year_nt_prot.csv
 ├── requirements.txt
 └── README.md
-
+```
 
